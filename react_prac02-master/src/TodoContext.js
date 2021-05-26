@@ -31,21 +31,20 @@ const initialTodos=
 
 function todoReducer(state,action)
 {
-	switch(action.type)
-		{
-			case 'CREATE':
-				return state.concat(action.todo);
-			
-			case 'TOGGLE':
-				return state.map(todo =>
-					todo.id === action.id ? {...todo, done:!todo.done} : todo);
-				
-			case 'REMOVE':
-				return state.filter(todo => todo.id !== action.id);
-				
-			default:
-				throw new Error('Unhandled action type : $(action.type)');
-		}	
+	let actionToFunc = new Map([
+		['CREATE', () => state.concat(action.todo)],
+		['TOGGLE', () => state.map(todo =>
+			todo.id === action.id ? {...todo, done:!todo.done} : todo)],
+		['REMOVE', () => state.filter(todo => todo.id !== action.id)]
+		])
+
+	if(actionToFunc.has(action.type)) {
+		return actionToFunc[action.type]();
+	} else{
+		return "error";
+	}
+	
+	
 }
 
 const TodoStateContext = createContext();
